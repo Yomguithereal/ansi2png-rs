@@ -76,8 +76,24 @@ impl EscapeSequence {
                     14 => ColorType::Bright(Color::Cyan),
                     15 => ColorType::Bright(Color::White),
 
-                    // TODO: Implemente rgb colors https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
-                    16..=255 => ColorType::Rgb((0, 0, 0)),
+                    // 6x6x6 color cube: indices 16–231
+                    16..=231 => {
+                        let idx = **n - 16;
+
+                        let r = idx / 36;
+                        let g = (idx / 6) % 6;
+                        let b = idx % 6;
+
+                        // Each step maps to: 0-0, 1-95, 2-135, 3-175, 4-215, 5-255
+                        let to_byte = |v: u16| if v == 0 { 0u8 } else { (55 + v * 40) as u8 };
+                        ColorType::Rgb((to_byte(r), to_byte(g), to_byte(b)))
+                    }
+
+                    // Grayscale ramp: indices 232–255 (8, 18, 28, ... 238)
+                    232..=255 => {
+                        let level = ((**n - 232) * 10 + 8) as u8;
+                        ColorType::Rgb((level, level, level))
+                    }
 
                     _ => return vec![Self::Unimplemented(vec![**fg_or_bg, 5, **n])],
                 };
@@ -90,6 +106,16 @@ impl EscapeSequence {
                     48 => vec![Self::BackgroundColor(color)],
 
                     _ => vec![Self::Unimplemented(vec![**fg_or_bg, 5, **n])],
+                }
+            }
+
+            // 24 bits, truecolor
+            [fg_or_bg, 2, r, g, b] if **r <= 255 && **g <= 255 && **b <= 255 => {
+                let color = ColorType::Rgb((**r as u8, **g as u8, **b as u8));
+                match fg_or_bg {
+                    38 => vec![Self::ForegroundColor(color)],
+                    48 => vec![Self::BackgroundColor(color)],
+                    _ => vec![Self::Unimplemented(vec![**fg_or_bg, 2, **r, **g, **b])],
                 }
             }
 
