@@ -44,6 +44,7 @@ struct TextEntry {
     background_color: ColorType,
     font: FontState,
     underline: bool,
+    faint: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -64,6 +65,7 @@ struct State {
     font: FontState,
     last_execute_byte: Option<u8>,
     underline: bool,
+    faint: bool
 }
 
 pub(super) struct Printer<'a> {
@@ -108,6 +110,7 @@ impl Default for State {
             font: FontState::Normal,
             last_execute_byte: None,
             underline: false,
+            faint: false,
         }
     }
 }
@@ -122,6 +125,7 @@ impl Perform for Printer<'_> {
                 background_color: self.state.background_color,
                 font: self.state.font,
                 underline: self.state.underline,
+                faint: self.state.faint,
             },
         );
 
@@ -187,6 +191,7 @@ impl Perform for Printer<'_> {
                     self.state.background_color = defaults.background_color;
                     self.state.font = defaults.font;
                     self.state.underline = false;
+                    self.state.faint = false;
                 }
 
                 EscapeSequence::Bold => self.state.font += FontState::Bold,
@@ -212,8 +217,15 @@ impl Perform for Printer<'_> {
                     self.state.background_color = ColorType::PrimaryBackground
                 }
 
+                EscapeSequence::Faint => {
+                    self.state.faint = true;
+                }
+
+                EscapeSequence::NormalItensity => {
+                    self.state.faint = false;
+                }
+
                 EscapeSequence::BlackletterFont
-                | EscapeSequence::Faint
                 | EscapeSequence::SlowBlink
                 | EscapeSequence::NotBlinking
                 | EscapeSequence::ReverseVideo
@@ -224,7 +236,6 @@ impl Perform for Printer<'_> {
                 | EscapeSequence::DisableProportionalSpacing
                 | EscapeSequence::NeitherSuperscriptNorSubscript
                 | EscapeSequence::NotReserved
-                | EscapeSequence::NormalItensity
                 | EscapeSequence::RapidBlink => {
                     eprintln!("not implemented for action: {action:?}")
                 }
@@ -293,9 +304,15 @@ impl From<Printer<'_>> for RgbImage {
                 FontState::ItalicBold => &printer.settings.font_italic_bold,
             };
 
+            let color = if entry.faint {
+                printer.settings.pallete.get_faint_color(entry.foreground_color)
+            } else {
+                printer.settings.pallete.get_color(entry.foreground_color)
+            };
+
             draw_text_mut(
                 &mut image,
-                Rgb(printer.settings.pallete.get_color(entry.foreground_color)),
+                Rgb(color),
                 (*x).try_into().unwrap(),
                 (*y).try_into().unwrap(),
                 printer.settings.scale,

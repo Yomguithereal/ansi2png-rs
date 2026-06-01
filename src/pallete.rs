@@ -75,6 +75,18 @@ impl Palette {
             },
         }
     }
+
+    pub fn get_faint_color(&self, color: ColorType) -> [u8; 3] {
+        let color = self.get_color(color);
+        let background = self.pallete().primary_background;
+
+        // Blending with background
+        [
+            ((color[0] as u16 + background[0] as u16) / 2) as u8,
+            ((color[1] as u16 + background[1] as u16) / 2) as u8,
+            ((color[2] as u16 + background[2] as u16) / 2) as u8
+        ]
+    }
 }
 
 fn pallete_custom() -> PaletteData {
