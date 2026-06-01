@@ -16,14 +16,24 @@ exclude = [
     "resources/*",
 ]
 
+[lib]
+name = "ansi2png"
+path = "./src/lib.rs"
+
+[[bin]]
+name = "ansi2png-rs"
+path = "./src/bin.rs"
+require-features = ["cli"]
+
 [features]
-default = ["font-style"]
+default = ["font-style", "cli"]
 font-style = []
+cli = ["dep:clap"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
+clap = { version = "4", features = ["derive"], optional = true}
 image = "0.24"
 imageproc = "0.23"
 include-flate = "0.3"
