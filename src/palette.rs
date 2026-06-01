@@ -10,6 +10,7 @@ use crate::color::{
 pub(super) enum Palette {
     Custom,
     Test,
+    Eastwood,
 }
 
 #[derive(Debug)]
@@ -41,6 +42,7 @@ impl Palette {
         match self {
             Palette::Custom => palette_custom(),
             Palette::Test => palette_test(),
+            Palette::Eastwood => palette_eastwood(),
         }
     }
 
@@ -140,5 +142,32 @@ fn palette_test() -> PaletteData {
         bright_magenta: [168, 37, 191],
         bright_cyan: [0, 131, 143],
         bright_white: [255, 255, 255],
+    }
+}
+
+fn palette_eastwood() -> PaletteData {
+    PaletteData {
+        primary_background: [23, 20, 33],    // rgb(23,20,33)
+        primary_foreground: [208, 207, 204], // rgb(208,207,204) — color 7 (white)
+
+        // Normal colors (0–7)
+        black: [23, 20, 33],     // rgb(23,20,33)
+        red: [192, 28, 40],      // rgb(192,28,40)
+        green: [38, 162, 105],   // rgb(38,162,105)
+        yellow: [162, 115, 76],  // rgb(162,115,76)
+        blue: [18, 72, 139],     // rgb(18,72,139)
+        magenta: [163, 71, 186], // rgb(163,71,186)
+        cyan: [42, 161, 179],    // rgb(42,161,179)
+        white: [208, 207, 204],  // rgb(208,207,204)
+
+        // Bright colors (8–15)
+        bright_black: [94, 92, 100],    // rgb(94,92,100)
+        bright_red: [246, 97, 81],      // rgb(246,97,81)
+        bright_green: [51, 209, 122],   // rgb(51,209,122)
+        bright_yellow: [233, 173, 12],  // rgb(233,173,12)
+        bright_blue: [42, 123, 222],    // rgb(42,123,222)
+        bright_magenta: [192, 97, 203], // rgb(192,97,203)
+        bright_cyan: [51, 199, 222],    // rgb(51,199,222)
+        bright_white: [255, 255, 255],  // rgb(255,255,255)
     }
 }
