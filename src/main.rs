@@ -11,12 +11,12 @@ use vte::Parser;
 mod color;
 mod escape;
 mod opt;
-mod pallete;
+mod palette;
 mod printer;
 
 use crate::{
     opt::Opt,
-    pallete::Palette,
+    palette::Palette,
     printer::Settings,
 };
 
@@ -48,7 +48,7 @@ fn main() {
         y: font_height,
     };
 
-    let pallete = Palette::Custom;
+    let palette = Palette::Custom;
     let png_width = opt.png_width;
 
     let mut statemachine = Parser::new();
@@ -59,7 +59,7 @@ fn main() {
         font_italic_bold,
         font_height,
         scale,
-        pallete,
+        palette,
         png_width,
     });
 

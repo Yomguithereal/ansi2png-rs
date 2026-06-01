@@ -16,7 +16,7 @@ use vte::{
 use crate::{
     color::ColorType,
     escape::EscapeSequence,
-    pallete::Palette,
+    palette::Palette,
 };
 
 pub(super) struct Settings<'a> {
@@ -26,7 +26,7 @@ pub(super) struct Settings<'a> {
     pub(super) font_italic_bold: Font<'a>,
     pub(super) font_height: f32,
     pub(super) scale: Scale,
-    pub(super) pallete: Palette,
+    pub(super) palette: Palette,
     pub(super) png_width: Option<u32>,
 }
 
@@ -65,7 +65,7 @@ struct State {
     font: FontState,
     last_execute_byte: Option<u8>,
     underline: bool,
-    faint: bool
+    faint: bool,
 }
 
 pub(super) struct Printer<'a> {
@@ -276,7 +276,7 @@ impl From<Printer<'_>> for RgbImage {
             *pixel = image::Rgb(
                 printer
                     .settings
-                    .pallete
+                    .palette
                     .get_color(ColorType::PrimaryBackground),
             );
         }
@@ -289,7 +289,7 @@ impl From<Printer<'_>> for RgbImage {
             for x in *x..background_end_x {
                 for y in *y..background_end_y {
                     let pixel =
-                        image::Rgb(printer.settings.pallete.get_color(entry.background_color));
+                        image::Rgb(printer.settings.palette.get_color(entry.background_color));
 
                     image.put_pixel(x, y, pixel);
                 }
@@ -305,9 +305,12 @@ impl From<Printer<'_>> for RgbImage {
             };
 
             let color = if entry.faint {
-                printer.settings.pallete.get_faint_color(entry.foreground_color)
+                printer
+                    .settings
+                    .palette
+                    .get_faint_color(entry.foreground_color)
             } else {
-                printer.settings.pallete.get_color(entry.foreground_color)
+                printer.settings.palette.get_color(entry.foreground_color)
             };
 
             draw_text_mut(
@@ -327,7 +330,7 @@ impl From<Printer<'_>> for RgbImage {
 
                 for underline_x in underline_start..underline_end {
                     let pixel =
-                        image::Rgb(printer.settings.pallete.get_color(entry.foreground_color));
+                        image::Rgb(printer.settings.palette.get_color(entry.foreground_color));
 
                     image.put_pixel(underline_x, underline_y - 1, pixel);
                     image.put_pixel(underline_x, underline_y, pixel);
