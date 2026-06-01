@@ -23,7 +23,14 @@ use crate::{
 fn main() {
     let opt = Opt::parse();
 
-    let mut input = std::io::BufReader::new(std::fs::File::open(opt.input_path).unwrap());
+    let input: Box<dyn Read> = match &opt.input_path {
+        Some(p) if !matches!(p.to_str(), Some(s) if s == "=") => {
+            Box::new(std::fs::File::open(p).unwrap())
+        }
+        _ => Box::new(std::io::stdin()),
+    };
+
+    let mut input = std::io::BufReader::new(input);
 
     flate!(static FONT: [u8] from
         "fonts/iosevka-term-extended.ttf");
