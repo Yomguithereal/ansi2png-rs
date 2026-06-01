@@ -16,6 +16,10 @@ exclude = [
     "resources/*",
 ]
 
+[features]
+default = ["font-style"]
+font-style = []
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
