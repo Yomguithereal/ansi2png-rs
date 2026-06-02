@@ -23,7 +23,7 @@ path = "./src/lib.rs"
 [[bin]]
 name = "ansi2png-rs"
 path = "./src/bin.rs"
-require-features = ["cli"]
+required-features = ["cli"]
 
 [features]
 default = ["font-style", "cli"]
