@@ -66,7 +66,7 @@ impl Ansi2PngSettings {
             y: font_height,
         };
 
-        let palette = Palette::Custom;
+        let palette = Palette::Eastwood;
         let png_width = self.png_width;
 
         let mut statemachine = Parser::new();
