@@ -12,7 +12,6 @@ use ansi2png::Ansi2PngSettings;
 struct Opt {
     /// Path to the input file. File should contain utf8 text that uses ANSI
     /// escape codes.
-    #[structopt(short, long)]
     input_path: Option<PathBuf>,
 
     /// Path to output file. Will always write a png regardless of file
@@ -23,6 +22,14 @@ struct Opt {
     /// Maximum width of the png
     #[structopt(short, long)]
     png_width: Option<u32>,
+
+    /// Horizontal padding, in pixels
+    #[structopt(long, default_value = "20")]
+    horizontal_padding: u32,
+
+    /// Vertical padding, in pixels
+    #[structopt(long, default_value = "20")]
+    vertical_padding: u32
 }
 
 fn main() {
@@ -30,6 +37,8 @@ fn main() {
 
     let settings = Ansi2PngSettings {
         png_width: opt.png_width,
+        horizontal_padding: opt.horizontal_padding,
+        vertical_padding: opt.vertical_padding
     };
 
     let input: Box<dyn Read> = match &opt.input_path {

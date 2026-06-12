@@ -28,6 +28,8 @@ pub(super) struct Settings<'a> {
     pub(super) scale: Scale,
     pub(super) palette: Palette,
     pub(super) png_width: Option<u32>,
+    pub(super) horizontal_padding: u32,
+    pub(super) vertical_padding: u32
 }
 
 #[derive(Debug, Default)]
@@ -269,7 +271,10 @@ impl From<Printer<'_>> for RgbImage {
             .unwrap_or(&0)
             + printer.settings_internal.new_line_distance;
 
-        let mut image = RgbImage::new(width, height);
+        let horizontal_padding = printer.settings.horizontal_padding;
+        let vertical_padding = printer.settings.vertical_padding;
+
+        let mut image = RgbImage::new(width + horizontal_padding * 2, height + vertical_padding * 2);
 
         // Set primary background
         for (_x, _y, pixel) in image.enumerate_pixels_mut() {
@@ -297,6 +302,9 @@ impl From<Printer<'_>> for RgbImage {
         });
 
         printer.state.text.iter().for_each(|((x, y), entry)| {
+            let x = x + horizontal_padding;
+            let y = y + vertical_padding;
+
             let font = match entry.font {
                 FontState::Normal => &printer.settings.font,
                 FontState::Bold => &printer.settings.font_bold,
@@ -316,15 +324,15 @@ impl From<Printer<'_>> for RgbImage {
             draw_text_mut(
                 &mut image,
                 Rgb(color),
-                (*x).try_into().unwrap(),
-                (*y).try_into().unwrap(),
+                x.try_into().unwrap(),
+                y.try_into().unwrap(),
                 printer.settings.scale,
                 font,
                 &entry.character.to_string(),
             );
 
             if entry.underline {
-                let underline_start = *x;
+                let underline_start = x;
                 let underline_end = x + printer.settings_internal.glyph_advance_width as u32;
                 let underline_y = (y - 6) + printer.settings.font_height as u32;
 

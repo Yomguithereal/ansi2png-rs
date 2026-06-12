@@ -52,6 +52,8 @@ fn load_fonts() -> (Font<'static>, Font<'static>, Font<'static>, Font<'static>) 
 
 pub struct Ansi2PngSettings {
     pub png_width: Option<u32>,
+    pub horizontal_padding: u32,
+    pub vertical_padding: u32,
 }
 
 impl Ansi2PngSettings {
@@ -79,6 +81,8 @@ impl Ansi2PngSettings {
             scale,
             palette,
             png_width,
+            horizontal_padding: self.horizontal_padding,
+            vertical_padding: self.vertical_padding
         });
 
         let mut buf = [0; 2048];
