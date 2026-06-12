@@ -55,6 +55,8 @@ impl EscapeSequence {
 
             [first, second] => vec![Self::parse_single(first), Self::parse_single(second)],
 
+            [0, first, second] => vec![Self::Reset, Self::parse_single(first), Self::parse_single(second)],
+
             // Set foreground (38) or background (48) color
             [fg_or_bg, 5, n] => {
                 let color = match n {
