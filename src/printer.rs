@@ -304,11 +304,14 @@ impl From<Printer<'_>> for RgbImage {
 
         // Render background before foreground from bottom to top to make it look better
         printer.state.text.iter().rev().for_each(|((x, y), entry)| {
+            let x = x + horizontal_padding;
+            let y = y + vertical_padding;
+
             let background_end_x = x + printer.settings_internal.glyph_advance_width as u32;
             let background_end_y = y + printer.settings.font_height as u32;
 
-            for x in *x..background_end_x {
-                for y in *y..background_end_y {
+            for x in x..background_end_x {
+                for y in y..background_end_y {
                     let pixel =
                         image::Rgb(printer.settings.palette.get_color(entry.background_color));
 
