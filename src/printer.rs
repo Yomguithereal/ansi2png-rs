@@ -29,7 +29,7 @@ pub(super) struct Settings<'a> {
     pub(super) palette: Palette,
     pub(super) png_width: Option<u32>,
     pub(super) horizontal_padding: u32,
-    pub(super) vertical_padding: u32
+    pub(super) vertical_padding: u32,
 }
 
 #[derive(Debug, Default)]
@@ -68,6 +68,7 @@ struct State {
     last_execute_byte: Option<u8>,
     underline: bool,
     faint: bool,
+    reverse: bool,
 }
 
 pub(super) struct Printer<'a> {
@@ -113,18 +114,26 @@ impl Default for State {
             last_execute_byte: None,
             underline: false,
             faint: false,
+            reverse: false,
         }
     }
 }
 
 impl Perform for Printer<'_> {
     fn print(&mut self, character: char) {
+        let mut foreground_color = self.state.foreground_color;
+        let mut background_color = self.state.background_color;
+
+        if self.state.reverse {
+            std::mem::swap(&mut foreground_color, &mut background_color);
+        }
+
         self.state.text.insert(
             (self.state.current_x, self.state.current_y),
             TextEntry {
                 character,
-                foreground_color: self.state.foreground_color,
-                background_color: self.state.background_color,
+                foreground_color,
+                background_color,
                 font: self.state.font,
                 underline: self.state.underline,
                 faint: self.state.faint,
@@ -194,6 +203,7 @@ impl Perform for Printer<'_> {
                     self.state.font = defaults.font;
                     self.state.underline = false;
                     self.state.faint = false;
+                    self.state.reverse = false;
                 }
 
                 EscapeSequence::Bold => self.state.font += FontState::Bold,
@@ -227,10 +237,13 @@ impl Perform for Printer<'_> {
                     self.state.faint = false;
                 }
 
+                EscapeSequence::ReverseVideo => {
+                    self.state.reverse = true;
+                }
+
                 EscapeSequence::BlackletterFont
                 | EscapeSequence::SlowBlink
                 | EscapeSequence::NotBlinking
-                | EscapeSequence::ReverseVideo
                 | EscapeSequence::Conceal
                 | EscapeSequence::CrossedOut
                 | EscapeSequence::PrimaryFont
@@ -274,7 +287,10 @@ impl From<Printer<'_>> for RgbImage {
         let horizontal_padding = printer.settings.horizontal_padding;
         let vertical_padding = printer.settings.vertical_padding;
 
-        let mut image = RgbImage::new(width + horizontal_padding * 2, height + vertical_padding * 2);
+        let mut image = RgbImage::new(
+            width + horizontal_padding * 2,
+            height + vertical_padding * 2,
+        );
 
         // Set primary background
         for (_x, _y, pixel) in image.enumerate_pixels_mut() {

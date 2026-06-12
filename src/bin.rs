@@ -29,7 +29,7 @@ struct Opt {
 
     /// Vertical padding, in pixels
     #[structopt(long, default_value = "20")]
-    vertical_padding: u32
+    vertical_padding: u32,
 }
 
 fn main() {
@@ -38,7 +38,7 @@ fn main() {
     let settings = Ansi2PngSettings {
         png_width: opt.png_width,
         horizontal_padding: opt.horizontal_padding,
-        vertical_padding: opt.vertical_padding
+        vertical_padding: opt.vertical_padding,
     };
 
     let input: Box<dyn Read> = match &opt.input_path {

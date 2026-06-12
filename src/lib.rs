@@ -82,7 +82,7 @@ impl Ansi2PngSettings {
             palette,
             png_width,
             horizontal_padding: self.horizontal_padding,
-            vertical_padding: self.vertical_padding
+            vertical_padding: self.vertical_padding,
         });
 
         let mut buf = [0; 2048];
